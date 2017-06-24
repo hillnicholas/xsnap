@@ -1,0 +1,64 @@
+#!/usr/bin/env perl
+
+
+use strict; 
+use warnings;
+
+
+# get dimensions from external command
+my $xdotoolposcmd = (split( /\s+/, `xdotool getactivewindow getwindowgeometry | grep Position`))[2];
+my $xdotoolgeocmd = (split( /\s+/, `xdotool getactivewindow getwindowgeometry | grep Geometry`))[2];
+
+# filter out the things 
+my $winx = ( split( /,/, $xdotoolposcmd ) )[0];
+my $winy = ( split( /,/, $xdotoolposcmd ) )[1];
+
+# get geometrycmd 
+my $geomx = ( split( /x/, $xdotoolgeocmd ) )[0];
+my $geomy = ( split( /x/, $xdotoolgeocmd ) )[1];
+
+# get the window manager display geometry
+my $wmx=( split( /\s+/,`xdotool getdisplaygeometry`) )[0];
+my $wmy=( split( /\s+/,`xdotool getdisplaygeometry`) )[1];
+
+
+# tolerances 
+my $x_tol = 70;
+my $y_tol = 70;
+
+my $positioncode = "";
+
+# if the x value window position is within 50 pixels of 0,0 (corner)
+if ( $winx < $x_tol) {
+	$positioncode = join '',$positioncode,"l";
+}
+# if the x value window position is within 50 pixels of halfway
+elsif ( $winx - ($wmx/2) < $x_tol ) {
+	$positioncode = join '',$positioncode,"r";
+}
+
+# if the y value window position is within 50 pixels of 0,0 (corner)
+if ( $winy < $y_tol ) {
+	$positioncode = join '',$positioncode,"t";
+}
+# if the y value window position is within 50 pixels of halfway
+elsif ( $winy - ($wmy/2) < $y_tol ) {
+	$positioncode = join '',$positioncode,"b";
+}
+
+# if the 
+if ( ( abs( $geomx - $wmx ) < $x_tol ) and (abs($geomy - ($wmy)) < $y_tol ) ) {
+	$positioncode = join '',$positioncode,"F";
+}
+elsif ( abs( $geomx - $wmx ) < $x_tol ) {
+	$positioncode = join '',$positioncode,"H";
+}
+elsif ( abs( $geomy - $wmy ) < $y_tol ) {
+	$positioncode = join '',$positioncode,"V";
+}
+elsif ( ( abs( $geomy - $wmy/2 ) < $y_tol )and (abs($geomy - ($wmy/2)) < $y_tol ) ){
+	$positioncode = join '',$positioncode,"Q";
+}
+#if ( ( $geomx - ($wmx) ) < $x_tol ) {
+
+print "$positioncode\n";

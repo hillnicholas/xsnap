@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+import subprocess, argparse
+
+parser = argparse.ArgumentParser(description='Provides window snapping commands.')
+
+parser.add_argument('-l',"--left", action="store_true",
+		                help='shift left')
+parser.add_argument('-r',"--right", action="store_true",
+		                help='shift right')
+parser.add_argument('-u',"--up", action="store_true",
+		                help='shift up')
+parser.add_argument('-d',"--down", action="store_true",
+		                help='shift down')
+args = parser.parse_args()
+
+pos = subprocess.check_output("xgetposition", shell=True).rstrip("\n")
+
+print pos
+
+if args.left: 
+	if "r" in pos and ("Q" in pos or "H" in pos):
+		pos = pos.replace("r","l")
+		pos = pos.replace("Q","")
+	elif "l" in pos and ("Q" in pos or "H" in pos):
+		pos = "l"
+
+elif args.right:
+	if "l" in pos and ("Q" in pos or "H" in pos):
+		pos = pos.replace("l","r")
+		pos = pos.replace("Q","")
+	elif "r" in pos and ("Q" in pos or "H" in pos):
+		pos = "r"
+
+elif args.up: 
+	if "t" in pos:
+		if "t" in pos and "H" in pos:
+			pos = "f"
+		else :
+			pos = "t"
+	else :
+		pos = pos.replace("b","t") 
+		pos = pos.replace("H","") 
+elif args.down:
+
+
+	if "F" in pos:
+		pos = "l"
+	elif "t" in pos:
+		pos = pos.replace("t","b")
+		pos = pos.replace("Q","")
+		pos = pos.replace("H","")
+		pos = pos.replace("V","")
+	elif "V" in pos:
+		pos = "bl"
+
+pos = pos.replace("Q","")
+pos = pos.replace("V","")
+pos = pos.replace("H","")
+pos = pos.replace("F","")
+
+if pos == "":
+	pos = "tl"
+subprocess.call("xsnap -" + pos , shell=True)
+	
+

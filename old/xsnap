@@ -1,0 +1,196 @@
+#!/usr/bin/env python
+from ewmh.ewmh import EWMH
+import argparse
+
+
+
+	
+class XSnapArrowKeys():
+
+	def __init__(self):
+
+		# configuration variables 
+		self.height_padding = 50
+		self.width_padding = 0
+		self.ewmh = EWMH()
+		# default position
+		self.pos = [0,0,0,100,100]
+
+		self.height =  self.ewmh.getDesktopGeometry()[1] - self.height_padding
+		self.width = self.ewmh.getDesktopGeometry()[0] - self.width_padding
+
+	def top(self):
+		self.pos[4] = 50
+	
+	def left(self):
+		self.pos[3] = 50
+
+	def bottom(self):
+		self.pos[2] = 50
+
+	def right(self):
+		self.pos[1] = 50
+	def fullscreen(self):
+		self.pos = [0,0,0,100,100]
+
+
+	def _convert_percent_to_pixels(self):
+		pos = self.pos
+		#x,y,w,h
+		pos[0] = self.pos[0]		
+		pos[1] = min(self.width,int( 0.01 * self.width * self.pos[1]))
+		pos[2] = min(self.height,int( 0.01 * self.height * self.pos[2]))
+		pos[3] = min(self.width-pos[1],int( 0.01 * self.width * self.pos[3]))
+		pos[4] = min(self.height-pos[2],int( 0.01 * self.height * self.pos[4]))	
+		return pos
+		
+	def execute(self):
+		w = self.ewmh.getActiveWindow()
+		pos = self._convert_percent_to_pixels()
+		self.ewmh.setMoveResizeWindow(w, x=pos[1],y=pos[2],w=pos[3],h=pos[4])
+		self.ewmh.display.flush()
+
+	def test(self):
+		print "w: ",width
+		print "h: ",height
+		pos = self._convert_percent_to_pixels()
+		print "CMD: ","wmctrl -r :ACTIVE: -e " + ",".join(pos)
+
+
+
+
+class XSnapNumberPad():
+
+	def __init__(self):
+
+		# configuration variables 
+		self.height_padding = 50
+		self.width_padding = 0
+		self.ewmh = EWMH()
+		# default position
+		self.pos = [0,0,0,100,100]
+		self.height =  self.ewmh.getDesktopGeometry()[1] - self.height_padding
+		self.width = self.ewmh.getDesktopGeometry()[0] - self.width_padding
+		self.num_width = 33
+		self.num_height = 33
+
+	def num( self, n ):
+		if n == 1:
+			self.one()
+		elif n == 2:
+			self.two()
+		elif n == 3:
+			self.three()
+		elif n == 4:
+			self.four()
+		elif n == 5:
+			self.five()
+		elif n == 6:
+			self.six()
+		elif n == 7:
+			self.seven()
+		elif n == 8:
+			self.eight()
+		elif n == 9:
+			self.nine()
+		else:
+			print "Error: bad input."
+			exit()
+	# [x,y,w,h]
+	def one(self):
+		self.pos = [0, 0, 66,self.num_width, self.num_height]
+	
+	def two(self):
+		self.pos = [0, 33, 66 ,self.num_width, self.num_height]
+
+	def three(self):
+		self.pos = [0, 66, 66 ,self.num_width,self.num_height]
+
+	def four(self):
+		self.pos = [0, 0, 33 ,self.num_width, self.num_height]
+
+	def five( self ):
+		self.pos = [0, 33, 33, self.num_width,self.num_height]
+		
+	def six( self ):
+		self.pos = [0, 66, 33, self.num_width, self.num_height]
+
+	def seven( self ):
+		self.pos = [0, 0,0,self.num_width,self.num_height]
+
+	def eight( self ):
+		self.pos = [0, 33 ,0,self.num_width,self.num_height]
+
+	def nine( self):
+		self.pos = [0, 66,0,self.num_width,self.num_height]
+
+	def _convert_percent_to_pixels(self):
+		pos = self.pos
+		#x,y,w,h
+		pos[0] = self.pos[0]		
+		pos[1] = min(self.width,int( 0.01 * self.width * self.pos[1]))
+		pos[2] = min(self.height,int( 0.01 * self.height * self.pos[2]))
+		pos[3] = min(self.width-pos[1],int( 0.01 * self.width * self.pos[3]))
+		pos[4] = min(self.height-pos[2],int( 0.01 * self.height * self.pos[4]))	
+		return pos
+		
+	def execute(self):
+		w = self.ewmh.getActiveWindow()
+		pos = self._convert_percent_to_pixels()
+		print pos
+		self.ewmh.setMoveResizeWindow(w, x=pos[1],y=pos[2],w=pos[3],h=pos[4])
+		self.ewmh.display.flush()
+
+
+	def test(self):
+		print "w: ",width
+		print "h: ",height
+		pos = self._convert_percent_to_pixels()
+		print "CMD: ","wmctrl -r :ACTIVE: -e " + ",".join(pos)
+
+
+
+
+
+if __name__ == "__main__":
+	xs = XSnapArrowKeys()
+
+	parser = argparse.ArgumentParser(description='Provides window snapping commands.')
+
+	parser.add_argument('-l',"--left", action="store_true",
+		                help='shift left')
+	parser.add_argument('-r',"--right", action="store_true",
+		                help='shift right')
+	parser.add_argument('-t',"--top", action="store_true",
+		                help='shift top')
+	parser.add_argument('-b',"--bottom", action="store_true",
+		                help='shift bottom')
+	parser.add_argument('-n',"--number", type=int,
+ 			help="the window will appear where the number pad shows.")
+
+	parser.add_argument('-f',"--fullscreen", action="store_true", help="move to fullscreen")
+	args = parser.parse_args()
+
+	
+	if args.number:
+		xs = XSnapNumberPad()
+		xs.num( args.number )
+		xs.execute()
+		
+	else:
+
+		
+		if args.left:
+			xs.left()
+		if args.right:
+			xs.right()
+		if args.top:
+			xs.top()
+		if args.bottom:
+			xs.bottom()
+		if args.fullscreen:
+			xs.fullscreen()
+
+		xs.execute()
+
+

@@ -1,0 +1,79 @@
+#!/bin/bash
+
+position="$(./xgetposition)"
+
+
+# 
+# if a quarter
+if [[ $position == *"Q"* ]]; then
+	# and on top
+	if [[ $position == *"t"* ]]; then
+		xsnap -f
+	else
+		# if on left, go left half
+		if [[ $position == *"l"* ]]; then
+			xsnap -l
+		# if on right, go right half
+		elif [[ $position == *"r"** ]]; then
+			xsnap -r
+		fi
+
+elif [[ $position == *"V"* ]]; then 
+	echo "vertical half";
+
+elif [[ $position == *"H"* ]]; then 
+	echo "Horizontal half";
+fi
+echo $position
+
+
+ltQ
+ltH
+ltV
+ltF
+
+rtQ
+rtH
+rtV
+
+lbQ
+lbH
+
+rbQ
+
+if right:
+	if contains l and q:
+		replace l with r 
+		remove q
+		xsnap $whatever
+	if contains r and q:
+		xsnap -r
+
+if left: 
+	if contains r and q:
+		replace r with l
+		remove q
+		xsnap $whatever
+	if contains l and q:
+		xsnap -l
+
+if up: 
+	if contains t
+		if contains H:
+			xsnap -t
+		else :
+			xsnap -f 
+	else :
+		replace b with t
+		remove H
+		xsnap $whatever
+
+if down:
+	if contains F:
+		xsnap -l
+	if contains V
+		xsnap -tl
+	
+			
+	
+
