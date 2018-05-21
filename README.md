@@ -1,2 +1,2 @@
 # xsnap
-window snapping commands for x window managers
+Window snapping commands for x window managers
